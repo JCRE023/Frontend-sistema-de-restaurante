@@ -1,0 +1,52 @@
+<div class="page-header">
+  <h2 class="page-title">Órdenes</h2>
+  <button mat-flat-button (click)="openCreate()">
+    <mat-icon>add</mat-icon> Abrir orden
+  </button>
+</div>
+
+<table mat-table [dataSource]="rows()" class="mat-elevation-z2 full-table">
+  <ng-container matColumnDef="id_orden">
+    <th mat-header-cell *matHeaderCellDef>ID Orden</th>
+    <td mat-cell *matCellDef="let r" class="uuid-cell">{{ r.id_orden | slice: 0 : 8 }}…</td>
+  </ng-container>
+
+  <ng-container matColumnDef="id_mesa">
+    <th mat-header-cell *matHeaderCellDef>Mesa</th>
+    <td mat-cell *matCellDef="let r">{{ mesaLabel(r.id_mesa) }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="estado">
+    <th mat-header-cell *matHeaderCellDef>Estado</th>
+    <td mat-cell *matCellDef="let r">
+      <span class="estado-badge" [class]="'estado-' + r.estado.toLowerCase()">{{ r.estado }}</span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="fecha_registro">
+    <th mat-header-cell *matHeaderCellDef>Fecha</th>
+    <td mat-cell *matCellDef="let r">{{ r.fecha_registro | date: 'dd/MM/yyyy HH:mm' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let r" class="actions-cell">
+      @if (r.estado === 'abierta') {
+        <button mat-icon-button color="primary" (click)="cerrar(r)" matTooltip="Cerrar orden">
+          <mat-icon>lock</mat-icon>
+        </button>
+      }
+      <button mat-icon-button color="warn" (click)="delete(r)" matTooltip="Eliminar">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="cols"></tr>
+  <tr mat-row *matRowDef="let r; columns: cols"></tr>
+  @if (rows().length === 0) {
+    <tr class="mat-row">
+      <td class="mat-cell empty-row" [attr.colspan]="cols.length">Sin registros</td>
+    </tr>
+  }
+</table>
