@@ -1,17 +1,33 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { DatePipe, SlicePipe } from '@angular/common';
+import { Component, OnInit, signal, inject } from '@angular/core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
 
-interface FacturaRead {
-  id_factura: string;
-  total: number;
-  fecha: string;
-}
+import { FacturaService } from '../../core/services/factura.service';
+import { FacturaRead } from '../../models/api.models';
 
 @Component({
+  standalone: true,
   selector: 'app-factura-list',
   templateUrl: './factura-list.html',
   styleUrl: './factura-list.scss',
+
+  imports: [
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    DatePipe,
+    SlicePipe
+  ],
 })
 export class FacturaListComponent implements OnInit {
+
+  private readonly svc = inject(FacturaService);
+  private readonly snack = inject(MatSnackBar);
 
   readonly rows = signal<FacturaRead[]>([]);
   readonly cols = ['id_factura', 'total', 'fecha'];
@@ -21,13 +37,14 @@ export class FacturaListComponent implements OnInit {
   }
 
   load(): void {
-    // Datos de prueba (puedes conectar backend después)
-    this.rows.set([
-      {
-        id_factura: '123456789',
-        total: 50000,
-        fecha: '2026-04-14T10:00:00'
-      }
-    ]);
+    this.svc.list().subscribe({
+      next: (data: FacturaRead[]) => this.rows.set(data),
+      error: (e: HttpErrorResponse) =>
+        this.snack.open(this.msg(e), 'Cerrar', { duration: 5000 }),
+    });
+  }
+
+  private msg(e: HttpErrorResponse): string {
+    return e.error?.detail || e.message;
   }
 }
