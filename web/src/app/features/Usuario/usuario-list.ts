@@ -4,20 +4,25 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { DatePipe, SlicePipe } from '@angular/common';
 
 import { UsuarioService } from '../../core/services/usuario.service';
 import { UsuarioRead } from '../../models/api.models';
 
 @Component({
+  standalone: true,
   selector: 'app-usuario-list',
+  templateUrl: './usuario-list.html',
+  styleUrl: './usuario-list.scss',
+
   imports: [
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    DatePipe,   
+    SlicePipe
   ],
-  templateUrl: './usuario-list.html',
-  styleUrl: './usuario-list.scss',
 })
 export class UsuarioListComponent implements OnInit {
 
@@ -33,7 +38,7 @@ export class UsuarioListComponent implements OnInit {
 
   load(): void {
     this.svc.list().subscribe({
-      next: (data) => this.rows.set(data),
+      next: (data: any[]) => this.rows.set(data), 
       error: (e: HttpErrorResponse) =>
         this.snack.open(this.msg(e), 'Cerrar', { duration: 5000 }),
     });
@@ -56,5 +61,10 @@ export class UsuarioListComponent implements OnInit {
 
   private msg(e: HttpErrorResponse): string {
     return e.error?.detail || e.message;
+  }
+
+ 
+  openCreate() {
+    alert('Crear usuario (pendiente)');
   }
 }
