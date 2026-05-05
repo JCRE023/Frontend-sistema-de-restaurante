@@ -72,7 +72,7 @@
           (selectionChange)="onUsuarioAudit($event.value)"
         >
           @for (u of usuarios(); track u.id_usuario) {
-            <mat-option [value]="u.id_usuario">{{ u.nombre_usuario }}</mat-option>
+            <mat-option [value]="u.id_usuario">{{ u.username }}</mat-option>
           }
         </mat-select>
       </mat-form-field>

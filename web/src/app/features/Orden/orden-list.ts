@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, SlicePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -77,6 +77,7 @@ export class OrdenCreateDialogComponent {
   selector: 'app-orden-list',
   imports: [
     DatePipe,
+    SlicePipe,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
