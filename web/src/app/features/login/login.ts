@@ -13,10 +13,6 @@ import { AuditContextService } from '../../core/audit-context.service';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { UsuarioRead } from '../../models/api.models';
 
-/**
- * Login de demostración: solo comprueba que el nombre de usuario exista en el API.
- * La contraseña no se valida contra el backend (hasta que exista autenticación real).
- */
 @Component({
   selector: 'app-login',
   imports: [
@@ -42,17 +38,14 @@ export class LoginComponent implements OnInit {
   readonly usuarios = signal<UsuarioRead[]>([]);
 
   readonly loginForm = this.fb.nonNullable.group({
-    nombre_usuario: ['', Validators.required],
+    username: ['', Validators.required],
     clave: ['', Validators.required],
   });
 
   readonly firstUserForm = this.fb.nonNullable.group({
-    nombre_completo: ['', Validators.required],
-    nombre_usuario: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    clave: ['', [Validators.required, Validators.minLength(4)]],
+    username: ['', Validators.required],
+    password: ['', [Validators.required, Validators.minLength(4)]],
     rol: ['admin', Validators.required],
-    telefono: [''],
   });
 
   ngOnInit(): void {
@@ -78,15 +71,11 @@ export class LoginComponent implements OnInit {
       this.loginForm.markAllAsTouched();
       return;
     }
-    const { nombre_usuario } = this.loginForm.getRawValue();
-    const key = nombre_usuario.trim().toLowerCase();
-    const u = this.usuarios().find(
-      (x) => x.nombre_usuario.trim().toLowerCase() === key,
-    );
+    const { username } = this.loginForm.getRawValue();
+    const key = username.trim().toLowerCase();
+    const u = this.usuarios().find((x) => x.username.trim().toLowerCase() === key);
     if (!u) {
-      this.snack.open('Usuario no encontrado. Revisa el nombre o crea un usuario en la base.', 'Cerrar', {
-        duration: 5000,
-      });
+      this.snack.open('Usuario no encontrado.', 'Cerrar', { duration: 5000 });
       return;
     }
     this.audit.select(u.id_usuario);
@@ -100,22 +89,15 @@ export class LoginComponent implements OnInit {
     }
     const v = this.firstUserForm.getRawValue();
     this.usuarioService
-      .create({
-        nombre_completo: v.nombre_completo,
-        nombre_usuario: v.nombre_usuario,
-        email: v.email,
-        clave: v.clave,
-        rol: v.rol,
-        telefono: v.telefono || null,
-        activo: true,
-      })
+      .create({ username: v.username, password: v.password, rol: v.rol })
       .subscribe({
         next: (created) => {
           this.usuarios.set([...this.usuarios(), created]);
           this.audit.select(created.id_usuario);
           void this.router.navigateByUrl('/app');
         },
-        error: (err: HttpErrorResponse) => this.snack.open(this.msg(err), 'Cerrar', { duration: 6000 }),
+        error: (err: HttpErrorResponse) =>
+          this.snack.open(this.msg(err), 'Cerrar', { duration: 6000 }),
       });
   }
 

@@ -7,7 +7,7 @@ import { DetalleOrdenCreate, DetalleOrdenRead, DetalleOrdenUpdate } from '../../
 
 @Injectable({ providedIn: 'root' })
 export class DetalleOrdenService {
-  private readonly base = `${environment.apiUrl}/detalle-ordenes`;
+  private readonly base = `${environment.apiUrl}/detalles-orden`;
 
   constructor(private readonly http: HttpClient) {}
 
