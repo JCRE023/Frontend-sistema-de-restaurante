@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, SlicePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -77,6 +77,7 @@ export class OrdenCreateDialogComponent {
   selector: 'app-orden-list',
   imports: [
     DatePipe,
+    SlicePipe,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -118,7 +119,7 @@ export class OrdenListComponent implements OnInit {
   openCreate(): void {
     const userId = this.audit.usuarioId();
     if (!userId) { this.snack.open('Selecciona un usuario de auditoría', 'OK', { duration: 4000 }); return; }
-    const disponibles = this.mesas().filter((m) => m.estado === 'DISPONIBLE');
+    const disponibles = this.mesas().filter((m) => m.estado.toLowerCase() === 'libre');
     if (disponibles.length === 0) {
       this.snack.open('No hay mesas disponibles', 'OK', { duration: 4000 });
       return;
@@ -132,7 +133,7 @@ export class OrdenListComponent implements OnInit {
           next: (created) => {
             this.rows.update((r) => [...r, created]);
             this.mesas.update((m) =>
-              m.map((x) => (x.id_mesa === result.id_mesa ? { ...x, estado: 'OCUPADA' } : x)),
+              m.map((x) => (x.id_mesa === result.id_mesa ? { ...x, estado: 'ocupada' } : x)),
             );
             this.snack.open('Orden abierta', 'OK', { duration: 3000 });
           },
@@ -148,7 +149,7 @@ export class OrdenListComponent implements OnInit {
       next: (updated) => {
         this.rows.update((r) => r.map((o) => (o.id_orden === updated.id_orden ? updated : o)));
         this.mesas.update((m) =>
-          m.map((x) => (x.id_mesa === orden.id_mesa ? { ...x, estado: 'DISPONIBLE' } : x)),
+          m.map((x) => (x.id_mesa === orden.id_mesa ? { ...x, estado: 'libre' } : x)),
         );
         this.snack.open('Orden cerrada', 'OK', { duration: 3000 });
       },
@@ -166,6 +167,12 @@ export class OrdenListComponent implements OnInit {
       },
       error: (e: HttpErrorResponse) =>
         this.snack.open(this.msg(e), 'Cerrar', { duration: 5000 }),
+    });
+  }
+
+  copyId(id: string): void {
+    navigator.clipboard.writeText(id).then(() => {
+      this.snack.open('ID copiado al portapapeles', 'OK', { duration: 2000 });
     });
   }
 

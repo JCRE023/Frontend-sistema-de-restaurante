@@ -1,1 +1,68 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+  ),
+  typography: (
+    brand-family: 'Roboto, sans-serif',
+  ),
+));
+
+html {
+  @include mat.all-component-themes($theme);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+}
+
+/* ── Layout compartido ─────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 12px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.full-table {
+  width: 100%;
+}
+
+.uuid-cell {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.empty-row {
+  text-align: center;
+  color: #999;
+  padding: 24px !important;
+}
+
+.desc-cell {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
