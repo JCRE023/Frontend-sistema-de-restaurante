@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://0.0.0.0:8000',
+  apiUrl: 'https://backend-sistema-de-restaurante-1.onrender.com',
 };
